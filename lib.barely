@@ -1,4 +1,4 @@
-define read_file = function(file: *): String {
+define read_file = function(file: *): * {
     variable fd = @syscall2(2, file, 0);
     variable stat: Stat;
     variable _ = @syscall2(5, fd, &(stat));
@@ -39,9 +39,20 @@ define string_length = function(string: *): whole_8 {
 
 define String = module {
 
-    define * = structure {
+    define String = structure {
         pointer: *;
         length: whole_8;
+    };
+
+    define new = function(pointer: *): String.String {
+        variable string: String.String;
+        String.String.<pointer(&(string), pointer);
+        String.String.<length(&(string), string_length(pointer));
+        return string;
+    };
+
+    define split_to_array = function(string: String, split_character: whole_1) {
+        variable array = brk_allocate(16384);
     };
     
 };

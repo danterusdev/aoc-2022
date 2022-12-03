@@ -1,0 +1,114 @@
+define main = function() {
+    variable input_file = "day2/input_real.txt";
+    variable contents = read_file(input_file);
+
+    variable contents_pointer = contents;
+
+    variable max_total = 0;
+    variable current_total = 0;
+
+    variable array, size = get_string_array(contents);
+    variable i = 0;
+    while <(i, size) {
+        variable item = *.cast(array8_get(array, i));
+
+        variable first_character = whole_1_to_whole_8(whole_1.>(whole_1.*cast(item)));
+        variable second_character = whole_1_to_whole_8(whole_1.>(whole_1.*cast(+(item, 2))));
+
+        if =(second_character, ASCII_X) {
+            current_total = +(current_total, 0);
+
+            if =(first_character, ASCII_A) {
+                current_total = +(current_total, 3);
+            } else if =(first_character, ASCII_B) {
+                current_total = +(current_total, 1);
+            } else if =(first_character, ASCII_C) {
+                current_total = +(current_total, 2);
+            };
+        } else if =(second_character, ASCII_Y) {
+            current_total = +(current_total, 3);
+
+            if =(first_character, ASCII_A) {
+                current_total = +(current_total, 1);
+            } else if =(first_character, ASCII_B) {
+                current_total = +(current_total, 2);
+            } else if =(first_character, ASCII_C) {
+                current_total = +(current_total, 3);
+            };
+        } else if =(second_character, ASCII_Z) {
+            current_total = +(current_total, 6);
+
+            if =(first_character, ASCII_A) {
+                current_total = +(current_total, 2);
+            } else if =(first_character, ASCII_B) {
+                current_total = +(current_total, 3);
+            } else if =(first_character, ASCII_C) {
+                current_total = +(current_total, 1);
+            };
+        };
+
+        i = +(i, 1);
+    };
+
+    // get the answer through strace because no number printing right now :(
+    variable _ = @syscall0(current_total);
+};
+
+define ASCII_A: whole_8 = 65;
+define ASCII_B: whole_8 = 66;
+define ASCII_C: whole_8 = 67;
+define ASCII_X: whole_8 = 88;
+define ASCII_Y: whole_8 = 89;
+define ASCII_Z: whole_8 = 90;
+
+define ASCII_NEWLINE: whole_1 = 10;
+
+define get_string_array = function(contents: *): *, whole_8 {
+    variable array = brk_allocate(*(8, 8192));
+
+    variable previous_location = 0;
+    variable current_location = previous_location;
+    variable current_line = 0;
+
+    while !(=(get_character(+(contents, current_location)), 0_whole_1)) {
+        if =(get_character(+(contents, current_location)), ASCII_NEWLINE) {
+            variable line_value = string_length_to_whole_8(+(contents, previous_location), -(current_location, previous_location));
+            array8_set(array, current_line, +(contents, previous_location));
+            current_line = +(current_line, 1);
+            previous_location = +(current_location, 1);
+        };
+        current_location = +(current_location, 1);
+    };
+
+    return array, current_line;
+};
+
+define string_length_to_whole_8 = function(pointer: *, size: whole_8): whole_8 {
+    variable total = 0;
+    variable i = 0;
+    while <(i, size) {
+        variable character = get_character(+(pointer, i));
+
+        total = *(total, 10);
+        total = +(total, whole_1_to_whole_8(-(whole_1.cast(character), 48_whole_1)));
+        i = +(i, 1);
+    };
+
+    return total;
+};
+
+define whole_1_to_whole_8 = function(input: whole_1): whole_8 {
+    variable output = whole_8.>0();
+    whole_1.<(whole_1.*cast(&(output)), input);
+    return output;
+};
+
+define array8_set = function(array8: *, index: whole_8, value: any_8) {
+    variable index_pointer = any_8.*cast(+(array8, *(index, 8)));
+    any_8.<(index_pointer, value);
+};
+
+define array8_get = function(array8: *, index: whole_8): any_8 {
+    variable index_pointer = any_8.*cast(+(array8, *(index, 8)));
+    return any_8.>(index_pointer);
+};
