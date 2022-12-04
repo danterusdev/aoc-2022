@@ -1,29 +1,23 @@
-define main = function() {
-    variable input_file = "day3/input_real.txt";
+define main = function(arguments: **, argument_count: whole_8) {
+    variable input_file = *.>(+(arguments, 8));
     variable contents = read_file(input_file);
 
     variable contents_pointer = contents;
 
-    variable max_total = 0;
     variable current_total = 0;
 
-    variable array, size = get_string_array(contents);
+    variable array = String.split_to_array(&(contents), 10_whole_1);
     variable i = 0;
-    while <(i, size) {
-        variable item = *.cast(array8_get(array, i));
-
-        variable length = string_line_length(item);
+    while <(i, StringArray.length(&(array))) {
+        variable item = StringArray.get(&(array), i);
+        variable length = String.length(&(item));
 
         variable j = 0;
         while <(j, /(length, 2)) {
-            variable j_pointer = +(item, j);
-
             variable k = 0;
             while <(k, /(length, 2)) {
-                variable k_pointer = +(item, +(/(length, 2), k));
-
-                if =(get_character(j_pointer), get_character(k_pointer)) {
-                    variable thing =  whole_1_to_whole_8(whole_1.cast(get_character(j_pointer)));
+                if =(String.get(&(item), j), String.get(&(item), +(k, /(length, 2)))) {
+                    variable thing = whole_1_to_whole_8(whole_1.cast(String.get(&(item), j)));
                     if <(thing, 91) {
                         current_total = +(current_total, +(-(thing, 65), 27));
                     } else {
@@ -41,73 +35,5 @@ define main = function() {
         i = +(i, 1);
     };
 
-    // get the answer through strace because no number printing right now :(
-    variable _ = @syscall0(current_total);
-};
-
-define string_line_length = function(string: *): whole_8 {
-    variable length = 0;
-    while !(=(get_character(+(string, length)), 10_whole_1)) {
-        length = +(length, 1);
-    };
-    return length;
-};
-
-define ASCII_A: whole_8 = 65;
-define ASCII_B: whole_8 = 66;
-define ASCII_C: whole_8 = 67;
-define ASCII_X: whole_8 = 88;
-define ASCII_Y: whole_8 = 89;
-define ASCII_Z: whole_8 = 90;
-
-define ASCII_NEWLINE: whole_1 = 10;
-
-define get_string_array = function(contents: *): *, whole_8 {
-    variable array = brk_allocate(*(8, 8192));
-
-    variable previous_location = 0;
-    variable current_location = previous_location;
-    variable current_line = 0;
-
-    while !(=(get_character(+(contents, current_location)), 0_whole_1)) {
-        if =(get_character(+(contents, current_location)), ASCII_NEWLINE) {
-            variable line_value = string_length_to_whole_8(+(contents, previous_location), -(current_location, previous_location));
-            array8_set(array, current_line, +(contents, previous_location));
-            current_line = +(current_line, 1);
-            previous_location = +(current_location, 1);
-        };
-        current_location = +(current_location, 1);
-    };
-
-    return array, current_line;
-};
-
-define string_length_to_whole_8 = function(pointer: *, size: whole_8): whole_8 {
-    variable total = 0;
-    variable i = 0;
-    while <(i, size) {
-        variable character = get_character(+(pointer, i));
-
-        total = *(total, 10);
-        total = +(total, whole_1_to_whole_8(-(whole_1.cast(character), 48_whole_1)));
-        i = +(i, 1);
-    };
-
-    return total;
-};
-
-define whole_1_to_whole_8 = function(input: whole_1): whole_8 {
-    variable output = whole_8.>0();
-    whole_1.<(whole_1.*cast(&(output)), input);
-    return output;
-};
-
-define array8_set = function(array8: *, index: whole_8, value: any_8) {
-    variable index_pointer = any_8.*cast(+(array8, *(index, 8)));
-    any_8.<(index_pointer, value);
-};
-
-define array8_get = function(array8: *, index: whole_8): any_8 {
-    variable index_pointer = any_8.*cast(+(array8, *(index, 8)));
-    return any_8.>(index_pointer);
+    println_whole_8(current_total);
 };

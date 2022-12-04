@@ -25,6 +25,12 @@ define print = function(string: *) {
     variable _ = @syscall3(1, 1, string, string_length(string));
 };
 
+define println = function(string: *) {
+    print(string);
+    variable new_line = 10;
+    variable _ = @syscall3(1, 1, &(new_line), 1);
+};
+
 define get_character = function(pointer: *): any_1 {
     return any_1.>(any_1.*cast(pointer));
 };
@@ -40,6 +46,12 @@ define string_length = function(string: *): whole_8 {
 define ASCII = module {
     define NEWLINE: any_1 = 10;
     define ZERO: any_1 = 48;
+    define A: any_1 = 65;
+    define B: any_1 = 66;
+    define C: any_1 = 67;
+    define X: any_1 = 88;
+    define Y: any_1 = 89;
+    define Z: any_1 = 90;
 };
 
 define String = module {
@@ -64,6 +76,20 @@ define String = module {
         return This.String.>length(string);
     };
 
+    define to_whole_8 = function(string: *This.String): whole_8 {
+        variable total = 0;
+        variable i = 0;
+        while <(i, This.length(string)) {
+            variable character = This.get(string, i);
+
+            total = *(total, 10);
+            total = +(total, whole_1_to_whole_8(-(whole_1.cast(character), 48_whole_1)));
+            i = +(i, 1);
+        };
+
+        return total;
+    };
+
     define println = function(string: *This.String) {
         variable _ = @syscall3(1, 1, This.String.>pointer(string), This.String.>length(string));
         variable new_line = 10;
@@ -75,8 +101,8 @@ define String = module {
         return any_1.>(any_1.*cast(pointer));
     };
 
-    define split_to_array = function(string: *This.String, split_character: whole_1): StringArray.Array {
-        variable array = StringArray.new(brk_allocate(16384));
+    define split_to_array = function(string: *This.String, split_character: any_1): StringArray.Array {
+        variable array = StringArray.new(brk_allocate(65536));
 
         variable pointer = This.String.>pointer(string);
 
@@ -112,6 +138,21 @@ define array_length = function(array: *, size: whole_8): whole_8 {
 };
 
 define StringArray = Array(String.String);
+define Whole8Array = Array(whole_8);
+
+define string_array_to_whole_8_array = function(string_array: StringArray.Array): Whole8Array {
+    variable length = StringArray.length(&(string_array));
+    variable array = Whole8Array.new(brk_allocate(*(length, whole_8.size())));
+    Whole8Array.Array.<length(&(array), length);
+
+    variable i = 0;
+    while <(i, length) {
+        Whole8Array.set(&(array), i, String.to_whole_8(&(StringArray.get(&(string_array), i))));
+        i = +(i, 1);
+    };
+
+    return array;
+};
 
 define Array = macro(type) {
     module {
@@ -135,6 +176,11 @@ define Array = macro(type) {
         define get = function(array: *This.Array, index: whole_8): type {
             variable location = type.*cast(+(This.Array.>buffer(array), *(index, type.size())));
             return type.>(location);
+        };
+
+        define *get = function(array: *This.Array, index: whole_8): *.type {
+            variable location = type.*cast(+(This.Array.>buffer(array), *(index, type.size())));
+            return location;
         };
 
         define length = function(array: *This.Array): whole_8 {
