@@ -1,0 +1,58 @@
+define read_file = function(file: *): * {
+    variable fd = @syscall2(2, file, 0);
+    variable stat: Stat;
+    variable _ = @syscall2(5, fd, &(stat));
+
+    variable allocated = brk_allocate(Stat.>size(&(stat)));
+    variable _ = @syscall3(0, fd, allocated, Stat.>size(&(stat)));
+
+    return allocated;
+};
+
+define Stat = structure {
+    before: any_48;
+    size: whole_8;
+    after: any_88;
+};
+
+define brk_allocate = function(size: whole_8): * {
+    variable brk = *.cast(@syscall1(12, 0));
+    variable _ = @syscall1(12, +(brk, size));
+    return brk;
+};
+
+define println = function(string: *) {
+    variable _ = @syscall3(1, 1, string, string_length(string));
+};
+
+define get_character = function(pointer: *): any_1 {
+    return any_1.>(any_1.*cast(pointer));
+};
+
+define string_length = function(string: *): whole_8 {
+    variable length = 0;
+    while !(=(get_character(+(string, length)), 0_whole_1)) {
+        length = +(length, 1);
+    };
+    return length;
+};
+
+define String = module {
+
+    define String = structure {
+        pointer: *;
+        length: whole_8;
+    };
+
+    define new = function(pointer: *): String.String {
+        variable string: String.String;
+        String.String.<pointer(&(string), pointer);
+        String.String.<length(&(string), string_length(pointer));
+        return string;
+    };
+
+    define split_to_array = function(string: String, split_character: whole_1) {
+        variable array = brk_allocate(16384);
+    };
+    
+};

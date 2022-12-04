@@ -1,0 +1,46 @@
+define main = function(arguments: **, argument_count: whole_8) {
+    variable input_file = *.>(+(arguments, 8));
+    variable contents = read_file(input_file);
+
+    variable max_total = 0;
+    variable current_total = 0;
+
+    variable array = String.split_to_array(&(contents), 10_whole_1);
+    variable i = 0;
+    while <(i, StringArray.length(&(array))) {
+        variable item1 = StringArray.get(&(array), i);
+        variable item2 = StringArray.get(&(array), +(i, 1));
+        variable item3 = StringArray.get(&(array), +(i, 2));
+
+        variable j = 0;
+        while <(j, String.length(&(item1))) {
+            variable k = 0;
+            while <(k, String.length(&(item2))) {
+                variable m = 0;
+                while <(m, String.length(&(item3))) {
+                    if &&(=(String.get(&(item1), j), String.get(&(item2), k)), =(String.get(&(item2), k), String.get(&(item3), m))) {
+                        variable thing = whole_1_to_whole_8(whole_1.cast(String.get(&(item1), j)));
+                        if <(thing, 91) {
+                            current_total = +(current_total, +(-(thing, 65), 27));
+                        } else {
+                            current_total = +(current_total, +(-(thing, 97), 1));
+                        };
+                        j = 999;
+                        k = 999;
+                        m = 999;
+                    };
+
+                    m = +(m, 1);
+                };
+
+                k = +(k, 1);
+            };
+
+            j = +(j, 1);
+        };
+
+        i = +(i, 3);
+    };
+
+    println_whole_8(current_total);
+};
