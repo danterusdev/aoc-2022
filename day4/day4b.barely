@@ -1,0 +1,37 @@
+define main = function(arguments: **, argument_count: whole_8) {
+    variable input_file = *.>(+(arguments, 8));
+    variable contents = read_file(input_file);
+
+    variable contents_pointer = contents;
+
+    variable current_total = 0;
+
+    variable array = String.split_to_array(&(contents), 10_whole_1);
+    variable i = 0;
+    while <(i, StringArray.length(&(array))) {
+        variable item = StringArray.get(&(array), i);
+
+        variable current_index = 0;
+        variable first_section = String.substring(&(item), current_index, String.get_index(&(item), current_index, ASCII.MINUS));
+        variable first_number = String.to_whole_8(&(first_section));
+        current_index = +(current_index, +(String.length(&(first_section)), 1));
+        variable second_section = String.substring(&(item), current_index, String.get_index(&(item), current_index, ASCII.COMMA));
+        variable second_number = String.to_whole_8(&(second_section));
+        current_index = +(current_index, +(String.length(&(second_section)), 1));
+        variable third_section = String.substring(&(item), current_index, String.get_index(&(item), current_index, ASCII.MINUS));
+        variable third_number = String.to_whole_8(&(third_section));
+        current_index = +(current_index, +(String.length(&(third_section)), 1));
+        variable fourth_section = String.substring(&(item), current_index, String.length(&(item)));
+        variable fourth_number = String.to_whole_8(&(fourth_section));
+
+        if &&(<(first_number, +(third_number, 1)), >(second_number, -(third_number, 1))) {
+            current_total = +(current_total, 1);
+        } else if &&(<(third_number, +(first_number, 1)), >(fourth_number, -(first_number, 1))) {
+            current_total = +(current_total, 1);
+        };
+
+        i = +(i, 1);
+    };
+
+    println_whole_8(current_total);
+};

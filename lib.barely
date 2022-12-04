@@ -45,6 +45,8 @@ define string_length = function(string: *): whole_8 {
 
 define ASCII = module {
     define NEWLINE: any_1 = 10;
+    define COMMA: any_1 = 44;
+    define MINUS: any_1 = 45;
     define ZERO: any_1 = 48;
     define A: any_1 = 65;
     define B: any_1 = 66;
@@ -99,6 +101,24 @@ define String = module {
     define get = function(string: *This.String, index: whole_8): any_1 {
         variable pointer = +(This.String.>pointer(string), index);
         return any_1.>(any_1.*cast(pointer));
+    };
+
+    define get_index = function(string: *This.String, start_index: whole_8, character: any_1): whole_8 {
+        variable length = This.String.>length(string);
+        variable i = start_index;
+        while <(i, length) {
+            if =(This.get(string, i), character) {
+                return i;
+            };
+            i = +(i, 1);
+        };
+
+        return 999;
+    };
+
+    define substring = function(string: *This.String, start_index: whole_8, end_index: whole_8): This.String {
+        variable pointer = This.String.>pointer(string);
+        return This.new_length(+(pointer, start_index), -(end_index, start_index));
     };
 
     define split_to_array = function(string: *This.String, split_character: any_1): StringArray.Array {
