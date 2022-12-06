@@ -158,9 +158,6 @@ define array_length = function(array: *, size: whole_8): whole_8 {
     return length;
 };
 
-define Any1ArrayArray = Array(Any1Array.Array);
-define Any1Array = Array(any_1);
-
 define StringArray = Array(String.String);
 define Whole8Array = Array(whole_8);
 
