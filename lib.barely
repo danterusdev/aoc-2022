@@ -45,6 +45,7 @@ define string_length = function(string: *): whole_8 {
 
 define ASCII = module {
     define NEWLINE: any_1 = 10;
+    define SPACE: any_1 = 32;
     define COMMA: any_1 = 44;
     define MINUS: any_1 = 45;
     define ZERO: any_1 = 48;
@@ -156,6 +157,9 @@ define array_length = function(array: *, size: whole_8): whole_8 {
     };
     return length;
 };
+
+define Any1ArrayArray = Array(Any1Array.Array);
+define Any1Array = Array(any_1);
 
 define StringArray = Array(String.String);
 define Whole8Array = Array(whole_8);

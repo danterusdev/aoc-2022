@@ -1,0 +1,100 @@
+define main = function(arguments: **, argument_count: whole_8) {
+    variable input_file = *.>(+(arguments, 8));
+    variable contents = read_file(input_file);
+
+    variable stacks = Any1ArrayArray.new(brk_allocate(131072));
+    variable i = 0;
+    while <(i, 10) {
+        Any1ArrayArray.set(&(stacks), i, Any1Array.new(brk_allocate(32768)));
+        i = +(i, 1);
+    };
+
+    //element 0 of each stack is the top
+    variable lines = String.split_to_array(&(contents), 10_whole_1);
+    variable i = 0;
+    while !(=(String.get(&(StringArray.get(&(lines), i)), 1), 49_whole_1)) {
+        i = +(i, 1);
+    };
+
+    variable k = -(i, 1);
+
+    while <(k, 999) {
+        variable line = StringArray.get(&(lines), k);
+
+        variable line_index = 0;
+        variable j = 1;
+        while <(j, String.length(&(line))) {
+            variable character = String.get(&(line), j);
+            if =(character, 32_whole_1) {
+            } else {
+                variable array = &(Any1ArrayArray.get(&(stacks), line_index));
+                push_character_array(array, character);
+            };
+
+            j = +(j, 4);
+            line_index = +(line_index, 1);
+        };
+
+        k = -(k, 1);
+    };
+
+    i = +(i, 2);
+
+    while <(i, StringArray.length(&(lines))) {
+        variable line = StringArray.get(&(lines), i);
+
+        variable current_index = 5;
+        variable first_section = String.substring(&(line), current_index, String.get_index(&(line), current_index, ASCII.SPACE));
+        variable first_number = String.to_whole_8(&(first_section));
+        current_index = +(current_index, +(String.length(&(first_section)), 6));
+        variable second_section = String.substring(&(line), current_index, String.get_index(&(line), current_index, ASCII.SPACE));
+        variable second_number = String.to_whole_8(&(second_section));
+        current_index = +(current_index, +(String.length(&(second_section)), 4));
+        variable third_section = String.substring(&(line), current_index, String.length(&(line)));
+        variable third_number = String.to_whole_8(&(third_section));
+
+        move(&(stacks), second_number, third_number, first_number);
+        i = +(i, 1);
+    };
+
+    //Print the top values
+    variable i = 0;
+    while <(i, 10) {
+        variable array = Any1ArrayArray.get(&(stacks), i);
+        variable first_element = pop_character_array(&(array));
+        if !(=(first_element, 0_whole_1)) {
+            variable _ = @syscall3(1, 1, &(first_element), 1);
+        };
+        i = +(i, 1);
+    };
+};
+
+define move = function(any_1_array_array: *Any1ArrayArray.Array, start: whole_8, end: whole_8, count: whole_8) {
+    variable popped = pop_character_array(&(Any1ArrayArray.get(any_1_array_array, -(start, 1))));
+    if >(count, 1) {
+        move(any_1_array_array, start, end, -(count, 1));
+    };
+    push_character_array(&(Any1ArrayArray.get(any_1_array_array, -(end, 1))), popped);
+};
+
+define pop_character_array = function(any_1_array: *Any1Array.Array): any_1 {
+    variable i = 0;
+    while !(=(Any1Array.get(any_1_array, i), 0_whole_1)) {
+        i = +(i, 1);
+    };
+    i = -(i, 1);
+
+    variable cached = Any1Array.get(any_1_array, i);
+    Any1Array.set(any_1_array, i, 0_whole_1);
+
+    return cached;
+};
+
+define push_character_array = function(any_1_array: *Any1Array.Array, character: any_1) {
+    variable i = 0;
+    while !(=(Any1Array.get(any_1_array, i), 0_whole_1)) {
+        i = +(i, 1);
+    };
+
+    Any1Array.set(any_1_array, i, character);
+};
