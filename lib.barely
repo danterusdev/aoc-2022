@@ -15,12 +15,6 @@ define Stat = structure {
     after: any_88;
 };
 
-define brk_allocate = function(size: whole_8): * {
-    variable brk = *.cast(@syscall1(12, 0));
-    variable _ = @syscall1(12, +(brk, size));
-    return brk;
-};
-
 define print = function(string: *) {
     variable _ = @syscall3(1, 1, string, string_length(string));
 };
@@ -55,6 +49,28 @@ define ASCII = module {
     define X: any_1 = 88;
     define Y: any_1 = 89;
     define Z: any_1 = 90;
+};
+
+define Allocator = module {
+    define Allocator = structure {
+        allocate_function: *function[whole_8:*];
+    };
+
+    define allocate = function(allocator: *This.Allocator, size: whole_8): * {
+        return This.Allocator.>allocate_function(allocator)(size);
+    };
+};
+
+define BrkAllocator = function(): Allocator.Allocator {
+    variable allocator: Allocator.Allocator;
+    Allocator.Allocator.<allocate_function(&(allocator), brk_allocate);
+    return allocator;
+};
+
+define brk_allocate = function(size: whole_8): * {
+    variable brk = *.cast(@syscall1(12, 0));
+    variable _ = @syscall1(12, +(brk, size));
+    return brk;
 };
 
 define String = module {
@@ -186,6 +202,14 @@ define Array = macro(type) {
             variable array = This.Array.>0();
             This.Array.<buffer(&(array), pointer);
             This.Array.<length(&(array), array_length(pointer, type.size()));
+            return array;
+        };
+
+        define new_allocate = function(allocator: *Allocator.Allocator, length: whole_8): This.Array {
+            variable array = This.Array.>0();
+            variable buffer = Allocator.allocate(allocator, *(type.size(), length));
+            This.Array.<buffer(&(array), buffer);
+            This.Array.<length(&(array), length);
             return array;
         };
 

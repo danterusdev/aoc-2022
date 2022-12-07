@@ -5,14 +5,15 @@ define main = function(arguments: **, argument_count: whole_8) {
     variable input_file = *.>(+(arguments, 8));
     variable contents = read_file(input_file);
 
-    variable stacks = Any1ArrayArray.new(brk_allocate(131072));
+    variable brk_allocator = BrkAllocator();
+
+    variable stacks = Any1ArrayArray.new_allocate(&(brk_allocator), 10);
     variable i = 0;
     while <(i, 10) {
-        Any1ArrayArray.set(&(stacks), i, Any1Array.new(brk_allocate(32768)));
+        Any1ArrayArray.set(&(stacks), i, Any1Array.new_allocate(&(brk_allocator), 100));
         i = +(i, 1);
     };
 
-    //element 0 of each stack is the top
     variable lines = String.split_to_array(&(contents), 10_whole_1);
     variable i = 0;
     while !(=(String.get(&(StringArray.get(&(lines), i)), 1), 49_whole_1)) {

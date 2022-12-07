@@ -12,7 +12,6 @@ define main = function(arguments: **, argument_count: whole_8) {
         i = +(i, 1);
     };
 
-    //element 0 of each stack is the top
     variable lines = String.split_to_array(&(contents), 10_whole_1);
     variable i = 0;
     while !(=(String.get(&(StringArray.get(&(lines), i)), 1), 49_whole_1)) {
