@@ -44,6 +44,7 @@ define ASCII = module {
     define COMMA: any_1 = 44;
     define MINUS: any_1 = 45;
     define ZERO: any_1 = 48;
+    define NINE: any_1 = 57;
     define A: any_1 = 65;
     define B: any_1 = 66;
     define C: any_1 = 67;
@@ -132,6 +133,30 @@ define String = module {
         };
 
         return 999;
+    };
+
+    define _= = function(string1: *This.String, string2: *This.String): boolean {
+        if !(=(String.length(string1), String.length(string2))) {
+            return false;
+        };
+
+        return This.length=(string1, string2, String.length(string1));
+    };
+
+    define length= = function(string1: *This.String, string2: *This.String, length: whole_8): boolean {
+        variable i = 0;
+        while <(i, length) {
+            variable string1_character = String.get(string1, i);
+            variable string2_character = String.get(string2, i);
+
+            if !(=(string1_character, string2_character)) {
+                return false;
+            };
+
+            i = +(i, 1);
+        };
+
+        return true;
     };
 
     define substring = function(string: *This.String, start_index: whole_8, end_index: whole_8): This.String {

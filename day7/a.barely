@@ -1,0 +1,122 @@
+define EntryArray = Array(Entry);
+
+define Entry = structure {
+    is_directory: boolean;
+    size: whole_8;
+    sub_entries: EntryArray;
+};
+
+define main = function(arguments: **, argument_count: whole_8) {
+    variable input_file = *.>(+(arguments, 8));
+    variable contents = read_file(input_file);
+
+    variable allocator = BrkAllocator();
+
+    variable line_index = 0;
+    variable lines = String.split_to_array(&(contents), 10_whole_1);
+    line_index = +(line_index, 1);
+
+    variable top_directory = create_new_directory_entry(&(allocator));
+    parse_entry(&(top_directory), &(lines), &(line_index), &(allocator));
+
+    variable size = 0;
+    add_if_100000(&(top_directory), &(size));
+
+    println_whole_8(size);
+};
+
+define add_if_100000 = function(directory: *Entry, counter: *whole_8) {
+    variable size = get_total_size(directory);
+
+    if <(size, 100000) {
+        whole_8.<(counter, +(whole_8.>(counter), size));
+    };
+
+    variable i = 0;
+    while <(i, EntryArray.length(&(Entry.>sub_entries(directory)))) {
+        variable entry = EntryArray.get(&(Entry.>sub_entries(directory)), i);
+
+        if Entry.>is_directory(&(entry)) {
+            add_if_100000(&(entry), counter);
+        };
+
+        i = +(i, 1);
+    };
+};
+
+define get_total_size = function(entry: *Entry): whole_8 {
+    if Entry.>is_directory(entry) {
+        variable total = 0;
+        variable i = 0;
+        while <(i, EntryArray.length(&(Entry.>sub_entries(entry)))) {
+            total = +(total, get_total_size(&(EntryArray.get(&(Entry.>sub_entries(entry)), i))));
+            i = +(i, 1);
+        };
+        return total;
+    } else {
+        return Entry.>size(entry);
+    };
+    return 0;
+};
+
+define create_new_directory_entry = function(allocator: *Allocator.Allocator): Entry {
+    variable entry = Entry.>0();
+    Entry.<is_directory(&(entry), true);
+    Entry.<sub_entries(&(entry), EntryArray.new_allocate(allocator, 100));
+    return entry;
+};
+
+define parse_entry = function(entry: *.Entry, lines: *StringArray, line_index: *whole_8, allocator: *Allocator.Allocator) {
+    variable index = +(whole_8.>(line_index), 2);
+
+    variable entry_index = 0;
+
+    variable $ = String.new("$");
+
+    while !(String.length=(&(StringArray.get(lines, index)), &($), 1)) {
+        variable line = StringArray.get(lines, index);
+        variable first_character = String.get(&(line), 0);
+        
+        if &&(>(first_character, ASCII.ZERO), <(first_character, +(ASCII.NINE, 1_whole_1))) {
+            variable size_string = String.substring(&(line), 0, String.get_index(&(line), 0, ASCII.SPACE));
+            variable size = String.to_whole_8(&(size_string));
+
+            variable new_entry = Entry.>0();
+            Entry.<size(&(new_entry), size);
+
+            EntryArray.set(&(Entry.>sub_entries(entry)), entry_index, new_entry);
+
+            entry_index = +(entry_index, 1);
+        };
+
+        index = +(index, 1);
+
+        if !(<(index, StringArray.length(lines))) {
+            whole_8.<(line_index, index);
+            return;
+        };
+    };
+
+    variable did_anything = false;
+    variable $cd_back = String.new("$ cd ..");
+    while !(String._=(&(StringArray.get(lines, index)), &($cd_back))) {
+        variable line = StringArray.get(lines, index);
+
+        variable new_entry = create_new_directory_entry(allocator);
+        parse_entry(&(new_entry), lines, &(index), allocator);
+
+        EntryArray.set(&(Entry.>sub_entries(entry)), entry_index, new_entry);
+        entry_index = +(entry_index, 1);
+
+        did_anything = true;
+
+        if !(<(+(index, 2), StringArray.length(lines))) {
+            whole_8.<(line_index, index);
+            return;
+        };
+    };
+
+    index = +(index, 1);
+
+    whole_8.<(line_index, index);
+};
