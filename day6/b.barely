@@ -1,0 +1,58 @@
+define Any1Array = Array(any_1);
+
+define ARRAY_SIZE = 14;
+
+define main = function(arguments: **, argument_count: whole_8) {
+    variable input_file = *.>(+(arguments, 8));
+    variable contents = read_file(input_file);
+
+    variable allocator = BrkAllocator();
+
+    variable previous_array = Any1Array.new_allocate(&(allocator), ARRAY_SIZE);
+
+    variable index = 0;
+    while <(index, String.length(&(contents))) {
+        variable character = String.get(&(contents), index);
+        shift_array(&(previous_array), character);
+
+        if !(has_duplicates(&(previous_array))) {
+            println_whole_8(+(index, 1));
+            break;
+        };
+
+        index = +(index, 1);
+    };
+};
+
+define shift_array = function(array: *Any1Array.Array, new_value: any_1) {
+    variable previous = new_value;
+    variable i = 0;
+    while <(i, ARRAY_SIZE) {
+        variable new_value = Any1Array.get(array, i);
+        Any1Array.set(array, i, previous);
+        previous = new_value;
+        i = +(i, 1);
+    };
+};
+
+define has_duplicates = function(array: *Any1Array.Array): boolean {
+    variable i = 0;
+    while <(i, ARRAY_SIZE) {
+        variable value = Any1Array.get(array, i);
+        variable j = 0;
+        if !(=(value, 0_whole_1)) {
+	    while <(j, ARRAY_SIZE) {
+		variable value2 = Any1Array.get(array, j);
+		if =(i, j) {
+		} else if =(value value2) {
+	            return true;
+		};
+		j = +(j, 1);
+            };
+        } else {
+            return true;
+        };
+        i = +(i, 1);
+    };
+    return false;
+};

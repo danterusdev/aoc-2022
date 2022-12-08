@@ -1,0 +1,30 @@
+define main = function(arguments: **, argument_count: whole_8) {
+    variable input_file = *.>(+(arguments, 8));
+    variable contents = read_file(input_file);
+
+    variable fourthLast: any_1 = 0_whole_1;
+    variable thirdLast: any_1 = 0_whole_1;
+    variable secondLast: any_1 = 0_whole_1;
+    variable firstLast: any_1 = 0_whole_1;
+
+    variable index = 0;
+    while <(index, String.length(&(contents))) {
+        variable character = String.get(&(contents), index);
+        fourthLast = thirdLast;
+        thirdLast = secondLast;
+        secondLast = firstLast;
+        firstLast = character;
+
+	if =(fourthLast, 0_whole_1) {
+        } else if |(|(=(firstLast, secondLast), =(firstLast, thirdLast)), =(firstLast, fourthLast)) {
+        } else if |(=(secondLast, thirdLast), =(secondLast, fourthLast)) {
+        } else if =(thirdLast, fourthLast) {
+        } else {
+            println_whole_8(+(index, 1));
+            break;
+        };
+
+        index = +(index, 1);
+    };
+};
+

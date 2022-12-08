@@ -3,10 +3,11 @@ define read_file = function(file: *): String.String {
     variable stat: Stat;
     variable _ = @syscall2(5, fd, &(stat));
 
-    variable allocated = brk_allocate(Stat.>size(&(stat)));
-    variable _ = @syscall3(0, fd, allocated, Stat.>size(&(stat)));
+    variable size = Stat.>size(&(stat));
+    variable allocated = brk_allocate(+(size, 1));
+    variable _ = @syscall3(0, fd, allocated, size);
 
-    return String.new(allocated);
+    return String.new_length(allocated, size);
 };
 
 define Stat = structure {
