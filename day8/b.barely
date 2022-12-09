@@ -1,0 +1,111 @@
+define Any1Array = Array(any_1);
+define Any1ArrayArray = Array(Any1Array.Array);
+
+define ARRAY_SIZE = 150;
+
+define main = function(arguments: **, argument_count: whole_8) {
+    variable input_file = *.>(+(arguments, 8));
+    variable contents = read_file(input_file);
+
+    variable allocator = BrkAllocator();
+
+    variable array = Any1ArrayArray.new_allocate(&(allocator), ARRAY_SIZE);
+    variable i = 0;
+    while <(i, ARRAY_SIZE) {
+        Any1ArrayArray.set(&(array), i, Any1Array.new_allocate(&(allocator), ARRAY_SIZE));
+        i = +(i, 1);
+    };
+
+    variable lines = String.split_to_array(&(contents), ASCII.NEWLINE);
+
+    variable actual_size = 0;
+
+    variable i = 0;
+    while <(i, StringArray.length(&(lines))) {
+        variable line = StringArray.get(&(lines), i);
+        variable j = 0;
+        while <(j, String.length(&(line))) {
+            variable character = String.get(&(line), j);
+
+            variable sub_array = &(Any1ArrayArray.get(&(array), i));
+            Any1Array.set(sub_array, j, -(character, ASCII.ZERO));
+
+            actual_size = j;
+            j = +(j, 1);
+        };
+        i = +(i, 1);
+    };
+
+    variable count = get_max_view_distance(&(array), +(actual_size, 1));
+    println_whole_8(count);
+};
+
+define get_max_view_distance = function(array: *.Any1ArrayArray, actual_size: whole_8): whole_8 {
+    variable max = 0;
+
+    variable i = 0;
+    while <(i, actual_size) {
+        variable sub_array = &(Any1ArrayArray.get(array, i));
+        variable j = 0;
+        while <(j, actual_size) {
+            variable view_distance = get_view_distance(array, i, j, actual_size);
+            if >(view_distance, max) {
+                max = view_distance;
+            };
+            j = +(j, 1);
+        };
+        i = +(i, 1);
+    };
+    return max;
+};
+
+define get_value = function(array: *.Any1ArrayArray, row: whole_8, column: whole_8): any_1 {
+    variable sub_array = &(Any1ArrayArray.get(array, row));
+    return Any1Array.get(sub_array, column);
+};
+
+define get_view_distance = function(array: *.Any1ArrayArray, row: whole_8, column: whole_8, actual_size: whole_8): whole_8 {
+    variable size = get_value(array, row, column);
+
+    variable j = column;
+    while >(j, 0) {
+        j = -(j, 1);
+        if !(<(get_value(array, row, j), get_value(array, row, column))) {
+            break;
+        };
+    };
+
+    variable view_distance_left = -(column, j);
+
+    variable j = column;
+    while <(j, -(actual_size, 1)) {
+        j = +(j, 1);
+        if !(<(get_value(array, row, j), get_value(array, row, column))) {
+            break;
+        };
+    };
+
+    variable view_distance_right = -(j, column);
+
+    variable i = row;
+    while >(i, 0) {
+        i = -(i, 1);
+        if !(<(get_value(array, i, column), get_value(array, row, column))) {
+            break;
+        };
+    };
+
+    variable view_distance_up = -(row, i);
+
+    variable i = row;
+    while <(i, -(actual_size, 1)) {
+        i = +(i, 1);
+        if !(<(get_value(array, i, column), get_value(array, row, column))) {
+            break;
+        };
+    };
+
+    variable view_distance_down = -(i, row);
+
+    return *(*(view_distance_left, view_distance_right), *(view_distance_up, view_distance_down));
+};
