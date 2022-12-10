@@ -45,12 +45,19 @@ define ASCII = module {
     define MINUS: any_1 = 45;
     define ZERO: any_1 = 48;
     define NINE: any_1 = 57;
-    define A: any_1 = 65;
-    define B: any_1 = 66;
-    define C: any_1 = 67;
-    define X: any_1 = 88;
-    define Y: any_1 = 89;
-    define Z: any_1 = 90;
+
+    define UPPERCASE = module {
+        define A: any_1 = 65;
+        define B: any_1 = 66;
+        define C: any_1 = 67;
+        define D: any_1 = 68;
+        define L: any_1 = 76;
+        define R: any_1 = 82;
+        define U: any_1 = 85;
+        define X: any_1 = 88;
+        define Y: any_1 = 89;
+        define Z: any_1 = 90;
+    };
 };
 
 define Allocator = module {
@@ -203,7 +210,7 @@ define array_length = function(array: *, size: whole_8): whole_8 {
 define StringArray = Array(String.String);
 define Whole8Array = Array(whole_8);
 
-define string_array_to_whole_8_array = function(string_array: StringArray.Array): Whole8Array {
+define string_array_to_whole_8_array = function(string_array: StringArray.Array): Whole8Array.Array {
     variable length = StringArray.length(&(string_array));
     variable array = Whole8Array.new(brk_allocate(*(length, whole_8.size())));
     Whole8Array.Array.<length(&(array), length);
@@ -270,7 +277,7 @@ define whole_8_to_string = function(whole_8: whole_8, buffer: *) {
     variable whole_82 = whole_8;
 
     if =(whole_8, 0) {
-        any_1.<(any_1.*cast(buffer), ASCII.ZERO);
+        any_1.<(any_1.*cast(buffer), ASCII.UPPERCASE.ZERO);
     };
 
     variable length = 0;
@@ -284,7 +291,7 @@ define whole_8_to_string = function(whole_8: whole_8, buffer: *) {
     variable i = 0;
     while !(=(whole_82, 0)) {
         variable number = whole_8_to_whole_1(%(whole_82, 10));
-        any_1.<(any_1.*cast(+(buffer, -(-(length, 1), i))), +(number, ASCII.ZERO));
+        any_1.<(any_1.*cast(+(buffer, -(-(length, 1), i))), +(number, ASCII.UPPERCASE.ZERO));
         whole_82 = /(whole_82, 10);
         i = +(i, 1);
     };

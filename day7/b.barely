@@ -81,7 +81,7 @@ define parse_entry = function(entry: *.Entry, lines: *StringArray, line_index: *
         variable line = StringArray.get(lines, index);
         variable first_character = String.get(&(line), 0);
         
-        if &&(>(first_character, ASCII.ZERO), <(first_character, +(ASCII.NINE, 1_whole_1))) {
+        if &&(>(first_character, ASCII.UPPERCASE.ZERO), <(first_character, +(ASCII.NINE, 1_whole_1))) {
             variable size_string = String.substring(&(line), 0, String.get_index(&(line), 0, ASCII.SPACE));
             variable size = String.to_whole_8(&(size_string));
 

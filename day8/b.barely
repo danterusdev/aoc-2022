@@ -28,7 +28,7 @@ define main = function(arguments: **, argument_count: whole_8) {
             variable character = String.get(&(line), j);
 
             variable sub_array = &(Any1ArrayArray.get(&(array), i));
-            Any1Array.set(sub_array, j, -(character, ASCII.ZERO));
+            Any1Array.set(sub_array, j, -(character, ASCII.UPPERCASE.ZERO));
 
             actual_size = j;
             j = +(j, 1);

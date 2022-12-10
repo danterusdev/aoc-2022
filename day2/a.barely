@@ -12,34 +12,34 @@ define main = function(arguments: **, argument_count: whole_8) {
         variable first_character = String.get(&(item), 0);
         variable second_character = String.get(&(item), 2);
 
-        if =(second_character, ASCII.X) {
+        if =(second_character, ASCII.UPPERCASE.X) {
             current_total = +(current_total, 1);
 
-            if =(first_character, ASCII.A) {
+            if =(first_character, ASCII.UPPERCASE.UPPERCASE.A) {
                 current_total = +(current_total, 3);
-            } else if =(first_character, ASCII.B) {
+            } else if =(first_character, ASCII.UPPERCASE.B) {
                 current_total = +(current_total, 0);
-            } else if =(first_character, ASCII.C) {
+            } else if =(first_character, ASCII.UPPERCASE.C) {
                 current_total = +(current_total, 6);
             };
-        } else if =(second_character, ASCII.Y) {
+        } else if =(second_character, ASCII.UPPERCASE.Y) {
             current_total = +(current_total, 2);
 
-            if =(first_character, ASCII.A) {
+            if =(first_character, ASCII.UPPERCASE.UPPERCASE.A) {
                 current_total = +(current_total, 6);
-            } else if =(first_character, ASCII.B) {
+            } else if =(first_character, ASCII.UPPERCASE.B) {
                 current_total = +(current_total, 3);
-            } else if =(first_character, ASCII.C) {
+            } else if =(first_character, ASCII.UPPERCASE.C) {
                 current_total = +(current_total, 0);
             };
-        } else if =(second_character, ASCII.Z) {
+        } else if =(second_character, ASCII.UPPERCASE.Z) {
             current_total = +(current_total, 3);
 
-            if =(first_character, ASCII.A) {
+            if =(first_character, ASCII.UPPERCASE.UPPERCASE.A) {
                 current_total = +(current_total, 0);
-            } else if =(first_character, ASCII.B) {
+            } else if =(first_character, ASCII.UPPERCASE.B) {
                 current_total = +(current_total, 6);
-            } else if =(first_character, ASCII.C) {
+            } else if =(first_character, ASCII.UPPERCASE.C) {
                 current_total = +(current_total, 3);
             };
         };

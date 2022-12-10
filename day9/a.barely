@@ -1,0 +1,143 @@
+define main = function(arguments: **, argument_count: whole_8) {
+    variable input_file = *.>(+(arguments, 8));
+    variable contents = read_file(input_file);
+
+    variable allocator = BrkAllocator();
+
+    variable lines = String.split_to_array(&(contents), ASCII.NEWLINE);
+
+    variable lead_x = 0;
+    variable lead_y = 0;
+
+    variable tail_x = 0;
+    variable tail_y = 0;
+
+    variable visited_locations = Whole8Array.new_allocate(&(allocator), 250000);
+    push_whole_8_array(&(visited_locations), 1);
+
+    variable i = 0;
+    while <(i, StringArray.length(&(lines))) {
+        variable line = StringArray.get(&(lines), i);
+
+        variable direction = String.get(&(line), 0);
+
+        variable amount_string = String.substring(&(line), 2, String.length(&(line)));
+        variable amount = String.to_whole_8(&(amount_string));
+
+        variable j = 0;
+        while <(j, amount) {
+            if =(direction, ASCII.UPPERCASE.U) {
+                lead_y = +(lead_y, 1);
+            } else if =(direction, ASCII.UPPERCASE.D) {
+                lead_y = -(lead_y, 1);
+            } else if =(direction, ASCII.UPPERCASE.R) {
+                lead_x = +(lead_x, 1);
+            } else if =(direction, ASCII.UPPERCASE.L) {
+                lead_x = -(lead_x, 1);
+            };
+
+            check_move_tail(lead_x, lead_y, &(tail_x), &(tail_y), &(visited_locations));
+            j = +(j, 1);
+        };
+
+        i = +(i, 1);
+    };
+
+    println_whole_8(whole_8_array_length(&(visited_locations)));
+};
+
+define abs = function(value: integer_8): integer_8 {
+    variable result = value;
+    // was a bug here
+    if <(value, 0) {
+        result = -(0_integer_8, value);
+    };
+    return result;
+};
+
+define check_move_tail = function(lead_x: whole_8, lead_y: whole_8, tail_x: *whole_8, tail_y: *whole_8, visited_locations: *Whole8Array) {
+    variable x_offset = -(integer_8.cast(lead_x), integer_8.cast(whole_8.>(tail_x)));
+    variable y_offset = -(integer_8.cast(lead_y), integer_8.cast(whole_8.>(tail_y)));
+
+    if =(x_offset, 0_integer_8) {
+        if >(y_offset, 1_integer_8) {
+            whole_8.<(tail_y, +(whole_8.>(tail_y), 1));
+        } else if <(y_offset, -1_integer_8) {
+            whole_8.<(tail_y, -(whole_8.>(tail_y), 1));
+        };
+    } else if =(y_offset, 0_integer_8) {
+
+        if >(x_offset, 1_integer_8) {
+            whole_8.<(tail_x, +(whole_8.>(tail_x), 1));
+        } else if <(x_offset, -1_integer_8) {
+            whole_8.<(tail_x, -(whole_8.>(tail_x), 1));
+        };
+    } else if >(x_offset, 1_integer_8) {
+        whole_8.<(tail_x, +(whole_8.>(tail_x), 1));
+        if >(y_offset, 0_integer_8) {
+            whole_8.<(tail_y, +(whole_8.>(tail_y), 1));
+        } else {
+            whole_8.<(tail_y, -(whole_8.>(tail_y), 1));
+        };
+    } else if <(x_offset, -1_integer_8) {
+        whole_8.<(tail_x, -(whole_8.>(tail_x), 1));
+        if >(y_offset, 0_integer_8) {
+            whole_8.<(tail_y, +(whole_8.>(tail_y), 1));
+        } else {
+            whole_8.<(tail_y, -(whole_8.>(tail_y), 1));
+        };
+    } else if >(y_offset, 1_integer_8) {
+        whole_8.<(tail_y, +(whole_8.>(tail_y), 1));
+        if >(x_offset, 0_integer_8) {
+            whole_8.<(tail_x, +(whole_8.>(tail_x), 1));
+        } else {
+            whole_8.<(tail_x, -(whole_8.>(tail_x), 1));
+        };
+    } else if <(y_offset, -1_integer_8) {
+        whole_8.<(tail_y, -(whole_8.>(tail_y), 1));
+        if >(x_offset, 0_integer_8) {
+            whole_8.<(tail_x, +(whole_8.>(tail_x), 1));
+        } else {
+            whole_8.<(tail_x, -(whole_8.>(tail_x), 1));
+        };
+    };
+
+    println("--");
+    println_whole_8(whole_8.>(tail_x));
+    println_whole_8(whole_8.>(tail_y));
+
+    variable location_computed = +(+(*(whole_8.>(tail_x), 1000), whole_8.>(tail_y)), 1);
+    if !(array_contains(visited_locations, location_computed)) {
+        push_whole_8_array(visited_locations, location_computed);
+    };
+};
+
+define array_contains = function(array: *Whole8Array.Array, value: whole_8): boolean {
+    variable i = 0;
+    while <(i, Whole8Array.length(array)) {
+        variable item = Whole8Array.get(array, i);
+        if =(item, value) {
+            return true;
+        };
+        i = +(i, 1);
+    };
+    return false;
+};
+
+define push_whole_8_array = function(any_1_array: *Whole8Array.Array, character: whole_8) {
+    variable i = 0;
+    while !(=(Whole8Array.get(any_1_array, i), 0)) {
+        i = +(i, 1);
+    };
+
+    Whole8Array.set(any_1_array, i, character);
+};
+
+define whole_8_array_length = function(any_1_array: *Whole8Array.Array): whole_8 {
+    variable i = 0;
+    while !(=(Whole8Array.get(any_1_array, i), 0)) {
+        i = +(i, 1);
+    };
+
+    return i;
+};
