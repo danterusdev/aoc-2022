@@ -1,10 +1,10 @@
-define read_file = function(file: *): String.String {
+define read_file = function(file: *, allocator: *.Allocator.Allocator): String.String {
     variable fd = @syscall2(2, file, 0);
     variable stat: Stat;
     variable _ = @syscall2(5, fd, &(stat));
 
     variable size = Stat.>size(&(stat));
-    variable allocated = brk_allocate(+(size, 1));
+    variable allocated = Allocator.allocate(allocator, +(size, 1));
     variable _ = @syscall3(0, fd, allocated, size);
 
     return String.new_length(allocated, size);
@@ -118,6 +118,31 @@ define String = module {
         return total;
     };
 
+    define to_integer_8 = function(string: *This.String): integer_8 {
+        variable total = 0;
+        variable i = 0;
+        
+        variable has_minus = false;
+        if =(This.get(string, i), ASCII.MINUS) {
+            i = 1;
+            has_minus = true;
+        };
+
+        while <(i, This.length(string)) {
+            variable character = This.get(string, i);
+
+            total = *(total, 10);
+            total = +(total, whole_1_to_whole_8(-(whole_1.cast(character), 48_whole_1)));
+            i = +(i, 1);
+        };
+
+        return if has_minus {
+            -(0_integer_8, integer_8.cast(total))
+        } else {
+            integer_8.cast(total)
+        };
+    };
+
     define println = function(string: *This.String) {
         variable _ = @syscall3(1, 1, This.String.>pointer(string), This.String.>length(string));
         variable new_line = 10;
@@ -171,8 +196,9 @@ define String = module {
         return This.new_length(+(pointer, start_index), -(end_index, start_index));
     };
 
-    define split_to_array = function(string: *This.String, split_character: any_1): StringArray.Array {
-        variable array = StringArray.new(brk_allocate(65536));
+    define split_to_array = function(string: *This.String, allocator: *Allocator.Allocator, split_character: any_1): StringArray.Array {
+        variable array = StringArray.new_allocate(allocator, 4096);
+        StringArray.Array.<length(&(array), 0);
 
         variable pointer = This.String.>pointer(string);
 
@@ -210,9 +236,9 @@ define array_length = function(array: *, size: whole_8): whole_8 {
 define StringArray = Array(String.String);
 define Whole8Array = Array(whole_8);
 
-define string_array_to_whole_8_array = function(string_array: StringArray.Array): Whole8Array.Array {
+define string_array_to_whole_8_array = function(string_array: StringArray.Array, allocator: *.Allocator.Allocator): Whole8Array.Array {
     variable length = StringArray.length(&(string_array));
-    variable array = Whole8Array.new(brk_allocate(*(length, whole_8.size())));
+    variable array = Whole8Array.new_allocate(allocator, length);
     Whole8Array.Array.<length(&(array), length);
 
     variable i = 0;
@@ -277,7 +303,7 @@ define whole_8_to_string = function(whole_8: whole_8, buffer: *) {
     variable whole_82 = whole_8;
 
     if =(whole_8, 0) {
-        any_1.<(any_1.*cast(buffer), ASCII.UPPERCASE.ZERO);
+        any_1.<(any_1.*cast(buffer), ASCII.ZERO);
     };
 
     variable length = 0;
@@ -291,7 +317,7 @@ define whole_8_to_string = function(whole_8: whole_8, buffer: *) {
     variable i = 0;
     while !(=(whole_82, 0)) {
         variable number = whole_8_to_whole_1(%(whole_82, 10));
-        any_1.<(any_1.*cast(+(buffer, -(-(length, 1), i))), +(number, ASCII.UPPERCASE.ZERO));
+        any_1.<(any_1.*cast(+(buffer, -(-(length, 1), i))), +(number, ASCII.ZERO));
         whole_82 = /(whole_82, 10);
         i = +(i, 1);
     };

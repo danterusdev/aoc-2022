@@ -5,9 +5,8 @@ define ARRAY_SIZE = 150;
 
 define main = function(arguments: **, argument_count: whole_8) {
     variable input_file = *.>(+(arguments, 8));
-    variable contents = read_file(input_file);
-
     variable allocator = BrkAllocator();
+    variable contents = read_file(input_file, &(allocator));
 
     variable array = Any1ArrayArray.new_allocate(&(allocator), ARRAY_SIZE);
     variable i = 0;
@@ -16,7 +15,7 @@ define main = function(arguments: **, argument_count: whole_8) {
         i = +(i, 1);
     };
 
-    variable lines = String.split_to_array(&(contents), ASCII.NEWLINE);
+    variable lines = String.split_to_array(&(contents), &(allocator), ASCII.NEWLINE);
 
     variable actual_size = 0;
 
@@ -28,7 +27,7 @@ define main = function(arguments: **, argument_count: whole_8) {
             variable character = String.get(&(line), j);
 
             variable sub_array = &(Any1ArrayArray.get(&(array), i));
-            Any1Array.set(sub_array, j, -(character, ASCII.UPPERCASE.ZERO));
+            Any1Array.set(sub_array, j, -(character, ASCII.ZERO));
 
             actual_size = j;
             j = +(j, 1);
@@ -40,7 +39,7 @@ define main = function(arguments: **, argument_count: whole_8) {
     println_whole_8(count);
 };
 
-define count_exposed = function(array: *.Any1ArrayArray, actual_size: whole_8): whole_8 {
+define count_exposed = function(array: *.Any1ArrayArray.Array, actual_size: whole_8): whole_8 {
     variable count = 0;
 
     variable i = 0;
@@ -58,12 +57,12 @@ define count_exposed = function(array: *.Any1ArrayArray, actual_size: whole_8): 
     return count;
 };
 
-define get_value = function(array: *.Any1ArrayArray, row: whole_8, column: whole_8): any_1 {
+define get_value = function(array: *.Any1ArrayArray.Array, row: whole_8, column: whole_8): any_1 {
     variable sub_array = &(Any1ArrayArray.get(array, row));
     return Any1Array.get(sub_array, column);
 };
 
-define is_exposed = function(array: *.Any1ArrayArray, row: whole_8, column: whole_8, actual_size: whole_8): boolean {
+define is_exposed = function(array: *.Any1ArrayArray.Array, row: whole_8, column: whole_8, actual_size: whole_8): boolean {
     variable size = get_value(array, row, column);
 
     variable blocked = false;

@@ -1,6 +1,7 @@
 define main = function(arguments: **, argument_count: whole_8) {
     variable input_file = *.>(+(arguments, 8));
-    variable contents = read_file(input_file);
+    variable allocator = BrkAllocator();
+    variable contents = read_file(input_file, &(allocator));
 
     variable max_total1 = 0;
     variable max_total2 = 0;
@@ -8,8 +9,8 @@ define main = function(arguments: **, argument_count: whole_8) {
 
     variable current_total = 0;
 
-    variable string_array = String.split_to_array(&(contents), ASCII.NEWLINE);
-    variable array = string_array_to_whole_8_array(string_array);
+    variable string_array = String.split_to_array(&(contents), &(allocator), ASCII.NEWLINE);
+    variable array = string_array_to_whole_8_array(string_array, &(allocator));
 
     variable i = 0;
     while <(i, Whole8Array.length(&(array))) {

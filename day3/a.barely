@@ -1,12 +1,13 @@
 define main = function(arguments: **, argument_count: whole_8) {
     variable input_file = *.>(+(arguments, 8));
-    variable contents = read_file(input_file);
+    variable allocator = BrkAllocator();
+    variable contents = read_file(input_file, &(allocator));
 
     variable contents_pointer = contents;
 
     variable current_total = 0;
 
-    variable array = String.split_to_array(&(contents), 10_whole_1);
+    variable array = String.split_to_array(&(contents), &(allocator), ASCII.NEWLINE);
     variable i = 0;
     while <(i, StringArray.length(&(array))) {
         variable item = StringArray.get(&(array), i);

@@ -1,0 +1,55 @@
+define main = function(arguments: **, argument_count: whole_8) {
+    variable input_file = *.>(+(arguments, 8));
+    variable allocator = BrkAllocator();
+    variable contents = read_file(input_file, &(allocator));
+
+    variable lines = String.split_to_array(&(contents), &(allocator), ASCII.NEWLINE);
+
+    variable total = 0_integer_8;
+
+    variable cycle = 0;
+    variable i = 0;
+    variable x = 1_integer_8;
+    while <(i, StringArray.length(&(lines))) {
+        variable line = StringArray.get(&(lines), i);
+        variable addx = String.new("addx");
+        variable noop = String.new("noop");
+
+        if String.length=(&(line), &(addx), 4) {
+            handle_cycle(&(total), +(cycle, 1), x);
+            variable amount_string = String.substring(&(line), 5, String.length(&(line)));
+            variable amount = String.to_integer_8(&(amount_string));
+            handle_cycle(&(total), +(cycle, 2), x);
+            x = +(x, amount);
+            cycle = +(cycle, 2);
+        } else if String.length=(&(line), &(noop), 4) {
+            cycle = +(cycle, 1);
+            handle_cycle(&(total), cycle, x);
+        };
+        i = +(i, 1);
+    };
+};
+
+define abs = function(value: integer_8): integer_8 {
+    return if <(value, 0) {
+        -(0_integer_8, value)
+    } else {
+        value
+    };
+};
+
+// there a bug that causes pixels in the last column to not always be as they should,
+// but for this solution they weren't really needed so I may or may not eventually fix
+define handle_cycle = function(total: *integer_8, cycle: whole_8, x: integer_8) {
+    variable pixel_x = %(whole_8.cast(cycle), 40);
+
+    if &&(>(-(pixel_x, x), -1_integer_8), <(-(pixel_x, x), 3_integer_8)) {
+        print("#");
+    } else {
+        print(".");
+    };
+
+    if =(pixel_x, 0_integer_8) {
+        println("");
+    };
+};

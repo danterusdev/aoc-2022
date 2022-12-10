@@ -1,0 +1,50 @@
+define main = function(arguments: **, argument_count: whole_8) {
+    variable input_file = *.>(+(arguments, 8));
+    variable allocator = BrkAllocator();
+    variable contents = read_file(input_file, &(allocator));
+
+    variable lines = String.split_to_array(&(contents), &(allocator), ASCII.NEWLINE);
+
+    variable total = 0_integer_8;
+
+    variable cycle = 0;
+    variable i = 0;
+    variable x = 1_integer_8;
+    while <(i, StringArray.length(&(lines))) {
+        variable line = StringArray.get(&(lines), i);
+        variable addx = String.new("addx");
+        variable noop = String.new("noop");
+
+        if String.length=(&(line), &(addx), 4) {
+            add_to_total_maybe(&(total), +(cycle, 1), x);
+            variable amount_string = String.substring(&(line), 5, String.length(&(line)));
+            variable amount = String.to_integer_8(&(amount_string));
+            add_to_total_maybe(&(total), +(cycle, 2), x);
+            x = +(x, amount);
+            cycle = +(cycle, 2);
+        } else if String.length=(&(line), &(noop), 4) {
+            cycle = +(cycle, 1);
+            add_to_total_maybe(&(total), cycle, x);
+        };
+        i = +(i, 1);
+    };
+
+    println_whole_8(total);
+};
+
+define add_to_total_maybe = function(total: *integer_8, cycle: whole_8, x: integer_8) {
+    variable new_total = +(integer_8.>(total), *(x, integer_8.cast(cycle)));
+    if =(cycle, 20) {
+        integer_8.<(total, new_total);
+    } else if =(cycle, 60) {
+        integer_8.<(total, new_total);
+    } else if =(cycle, 100) {
+        integer_8.<(total, new_total);
+    } else if =(cycle, 140) {
+        integer_8.<(total, new_total);
+    } else if =(cycle, 180) {
+        integer_8.<(total, new_total);
+    } else if =(cycle, 220) {
+        integer_8.<(total, new_total);
+    };
+};

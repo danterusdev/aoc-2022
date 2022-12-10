@@ -1,10 +1,9 @@
 define main = function(arguments: **, argument_count: whole_8) {
     variable input_file = *.>(+(arguments, 8));
-    variable contents = read_file(input_file);
-
     variable allocator = BrkAllocator();
+    variable contents = read_file(input_file, &(allocator));
 
-    variable lines = String.split_to_array(&(contents), ASCII.NEWLINE);
+    variable lines = String.split_to_array(&(contents), &(allocator), ASCII.NEWLINE);
 
     variable lead_x = 0;
     variable lead_y = 0;
@@ -55,7 +54,7 @@ define abs = function(value: integer_8): integer_8 {
     return result;
 };
 
-define check_move_tail = function(lead_x: whole_8, lead_y: whole_8, tail_x: *whole_8, tail_y: *whole_8, visited_locations: *Whole8Array) {
+define check_move_tail = function(lead_x: whole_8, lead_y: whole_8, tail_x: *whole_8, tail_y: *whole_8, visited_locations: *Whole8Array.Array) {
     variable x_offset = -(integer_8.cast(lead_x), integer_8.cast(whole_8.>(tail_x)));
     variable y_offset = -(integer_8.cast(lead_y), integer_8.cast(whole_8.>(tail_y)));
 

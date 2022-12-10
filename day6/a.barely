@@ -1,6 +1,7 @@
 define main = function(arguments: **, argument_count: whole_8) {
     variable input_file = *.>(+(arguments, 8));
-    variable contents = read_file(input_file);
+    variable allocator = BrkAllocator();
+    variable contents = read_file(input_file, &(allocator));
 
     variable fourthLast: any_1 = 0_whole_1;
     variable thirdLast: any_1 = 0_whole_1;

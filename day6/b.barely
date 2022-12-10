@@ -4,9 +4,8 @@ define ARRAY_SIZE = 14;
 
 define main = function(arguments: **, argument_count: whole_8) {
     variable input_file = *.>(+(arguments, 8));
-    variable contents = read_file(input_file);
-
     variable allocator = BrkAllocator();
+    variable contents = read_file(input_file, &(allocator));
 
     variable previous_array = Any1Array.new_allocate(&(allocator), ARRAY_SIZE);
 

@@ -3,17 +3,16 @@ define EntryArray = Array(Entry);
 define Entry = structure {
     is_directory: boolean;
     size: whole_8;
-    sub_entries: EntryArray;
+    sub_entries: EntryArray.Array;
 };
 
 define main = function(arguments: **, argument_count: whole_8) {
     variable input_file = *.>(+(arguments, 8));
-    variable contents = read_file(input_file);
-
     variable allocator = BrkAllocator();
+    variable contents = read_file(input_file, &(allocator));
 
     variable line_index = 0;
-    variable lines = String.split_to_array(&(contents), 10_whole_1);
+    variable lines = String.split_to_array(&(contents), &(allocator), ASCII.NEWLINE);
     line_index = +(line_index, 1);
 
     variable top_directory = create_new_directory_entry(&(allocator));
@@ -81,7 +80,7 @@ define parse_entry = function(entry: *.Entry, lines: *StringArray, line_index: *
         variable line = StringArray.get(lines, index);
         variable first_character = String.get(&(line), 0);
         
-        if &&(>(first_character, ASCII.UPPERCASE.ZERO), <(first_character, +(ASCII.NINE, 1_whole_1))) {
+        if &&(>(first_character, ASCII.ZERO), <(first_character, +(ASCII.NINE, 1_whole_1))) {
             variable size_string = String.substring(&(line), 0, String.get_index(&(line), 0, ASCII.SPACE));
             variable size = String.to_whole_8(&(size_string));
 
