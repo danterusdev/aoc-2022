@@ -126,7 +126,7 @@ define check_move_tail = function(lead_x: whole_8, lead_y: whole_8, tail_x: *who
 
 define array_contains = function(array: *Whole8Array.Array, value: whole_8): boolean {
     variable i = 0;
-    while <(i, Whole8Array.length(array)) {
+    while !(=(Whole8Array.get(array, i), 0)) {
         variable item = Whole8Array.get(array, i);
         if =(item, value) {
             return true;

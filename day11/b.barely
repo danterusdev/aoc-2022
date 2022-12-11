@@ -69,6 +69,7 @@ define main = function(arguments: **, argument_count: whole_8) {
         j = +(j, 7);
     };
 
+    // Gotten from online, could not solve by myself :(
     variable total_check = 1;
     variable i = 0;
     while <(i, actual_monkey_count) {

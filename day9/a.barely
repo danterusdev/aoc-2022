@@ -65,7 +65,6 @@ define check_move_tail = function(lead_x: whole_8, lead_y: whole_8, tail_x: *who
             whole_8.<(tail_y, -(whole_8.>(tail_y), 1));
         };
     } else if =(y_offset, 0_integer_8) {
-
         if >(x_offset, 1_integer_8) {
             whole_8.<(tail_x, +(whole_8.>(tail_x), 1));
         } else if <(x_offset, -1_integer_8) {
@@ -101,10 +100,6 @@ define check_move_tail = function(lead_x: whole_8, lead_y: whole_8, tail_x: *who
         };
     };
 
-    println("--");
-    println_whole_8(whole_8.>(tail_x));
-    println_whole_8(whole_8.>(tail_y));
-
     variable location_computed = +(+(*(whole_8.>(tail_x), 1000), whole_8.>(tail_y)), 1);
     if !(array_contains(visited_locations, location_computed)) {
         push_whole_8_array(visited_locations, location_computed);
@@ -113,7 +108,7 @@ define check_move_tail = function(lead_x: whole_8, lead_y: whole_8, tail_x: *who
 
 define array_contains = function(array: *Whole8Array.Array, value: whole_8): boolean {
     variable i = 0;
-    while <(i, Whole8Array.length(array)) {
+    while !(=(Whole8Array.get(array, i), 0)) {
         variable item = Whole8Array.get(array, i);
         if =(item, value) {
             return true;
