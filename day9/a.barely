@@ -5,11 +5,11 @@ define main = function(arguments: **, argument_count: whole_8) {
 
     variable lines = String.split_to_array(&(contents), &(allocator), ASCII.NEWLINE);
 
-    variable lead_x = 0;
-    variable lead_y = 0;
+    variable lead_x = 0_integer_8;
+    variable lead_y = 0_integer_8;
 
-    variable tail_x = 0;
-    variable tail_y = 0;
+    variable tail_x = 0_integer_8;
+    variable tail_y = 0_integer_8;
 
     variable visited_locations = Whole8Array.new_allocate(&(allocator), 250000);
     push_whole_8_array(&(visited_locations), 1);
@@ -26,13 +26,13 @@ define main = function(arguments: **, argument_count: whole_8) {
         variable j = 0;
         while <(j, amount) {
             if =(direction, ASCII.UPPERCASE.U) {
-                lead_y = +(lead_y, 1);
+                lead_y = +(lead_y, 1_integer_8);
             } else if =(direction, ASCII.UPPERCASE.D) {
-                lead_y = -(lead_y, 1);
+                lead_y = -(lead_y, 1_integer_8);
             } else if =(direction, ASCII.UPPERCASE.R) {
-                lead_x = +(lead_x, 1);
+                lead_x = +(lead_x, 1_integer_8);
             } else if =(direction, ASCII.UPPERCASE.L) {
-                lead_x = -(lead_x, 1);
+                lead_x = -(lead_x, 1_integer_8);
             };
 
             check_move_tail(lead_x, lead_y, &(tail_x), &(tail_y), &(visited_locations));
@@ -54,53 +54,53 @@ define abs = function(value: integer_8): integer_8 {
     return result;
 };
 
-define check_move_tail = function(lead_x: whole_8, lead_y: whole_8, tail_x: *whole_8, tail_y: *whole_8, visited_locations: *Whole8Array.Array) {
+define check_move_tail = function(lead_x: integer_8, lead_y: integer_8, tail_x: *integer_8, tail_y: *integer_8, visited_locations: *Whole8Array.Array) {
     variable x_offset = -(integer_8.cast(lead_x), integer_8.cast(whole_8.>(tail_x)));
     variable y_offset = -(integer_8.cast(lead_y), integer_8.cast(whole_8.>(tail_y)));
 
     if =(x_offset, 0_integer_8) {
         if >(y_offset, 1_integer_8) {
-            whole_8.<(tail_y, +(whole_8.>(tail_y), 1));
+            integer_8.<(tail_y, +(whole_8.>(tail_y), 1_integer_8));
         } else if <(y_offset, -1_integer_8) {
-            whole_8.<(tail_y, -(whole_8.>(tail_y), 1));
+            integer_8.<(tail_y, -(whole_8.>(tail_y), 1_integer_8));
         };
     } else if =(y_offset, 0_integer_8) {
         if >(x_offset, 1_integer_8) {
-            whole_8.<(tail_x, +(whole_8.>(tail_x), 1));
+            integer_8.<(tail_x, +(whole_8.>(tail_x), 1_integer_8));
         } else if <(x_offset, -1_integer_8) {
-            whole_8.<(tail_x, -(whole_8.>(tail_x), 1));
+            integer_8.<(tail_x, -(whole_8.>(tail_x), 1_integer_8));
         };
     } else if >(x_offset, 1_integer_8) {
-        whole_8.<(tail_x, +(whole_8.>(tail_x), 1));
+        integer_8.<(tail_x, +(whole_8.>(tail_x), 1_integer_8));
         if >(y_offset, 0_integer_8) {
-            whole_8.<(tail_y, +(whole_8.>(tail_y), 1));
+            integer_8.<(tail_y, +(whole_8.>(tail_y), 1_integer_8));
         } else {
-            whole_8.<(tail_y, -(whole_8.>(tail_y), 1));
+            integer_8.<(tail_y, -(whole_8.>(tail_y), 1_integer_8));
         };
     } else if <(x_offset, -1_integer_8) {
-        whole_8.<(tail_x, -(whole_8.>(tail_x), 1));
+        integer_8.<(tail_x, -(whole_8.>(tail_x), 1_integer_8));
         if >(y_offset, 0_integer_8) {
-            whole_8.<(tail_y, +(whole_8.>(tail_y), 1));
+            integer_8.<(tail_y, +(whole_8.>(tail_y), 1_integer_8));
         } else {
-            whole_8.<(tail_y, -(whole_8.>(tail_y), 1));
+            integer_8.<(tail_y, -(whole_8.>(tail_y), 1_integer_8));
         };
     } else if >(y_offset, 1_integer_8) {
-        whole_8.<(tail_y, +(whole_8.>(tail_y), 1));
+        integer_8.<(tail_y, +(whole_8.>(tail_y), 1_integer_8));
         if >(x_offset, 0_integer_8) {
-            whole_8.<(tail_x, +(whole_8.>(tail_x), 1));
+            integer_8.<(tail_x, +(whole_8.>(tail_x), 1_integer_8));
         } else {
-            whole_8.<(tail_x, -(whole_8.>(tail_x), 1));
+            integer_8.<(tail_x, -(whole_8.>(tail_x), 1_integer_8));
         };
     } else if <(y_offset, -1_integer_8) {
-        whole_8.<(tail_y, -(whole_8.>(tail_y), 1));
+        integer_8.<(tail_y, -(whole_8.>(tail_y), 1_integer_8));
         if >(x_offset, 0_integer_8) {
-            whole_8.<(tail_x, +(whole_8.>(tail_x), 1));
+            integer_8.<(tail_x, +(whole_8.>(tail_x), 1_integer_8));
         } else {
-            whole_8.<(tail_x, -(whole_8.>(tail_x), 1));
+            integer_8.<(tail_x, -(whole_8.>(tail_x), 1_integer_8));
         };
     };
 
-    variable location_computed = +(+(*(whole_8.>(tail_x), 1000), whole_8.>(tail_y)), 1);
+    variable location_computed = +(+(*(integer_8.>(tail_x), 1000_integer_8), *(integer_8.>(tail_y), 1000000_integer_8)), 1_integer_8);
     if !(array_contains(visited_locations, location_computed)) {
         push_whole_8_array(visited_locations, location_computed);
     };
