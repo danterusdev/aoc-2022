@@ -1,0 +1,247 @@
+define Whole8ArrayArray = Array(Whole8Array.Array);
+define MONKEY_COUNT = 8;
+
+define main = function(arguments: **, argument_count: whole_8) {
+    variable input_file = *.>(+(arguments, 8));
+    variable allocator = BrkAllocator();
+    variable contents = read_file(input_file, &(allocator));
+
+    variable lines = String.split_to_array(&(contents), &(allocator), ASCII.NEWLINE);
+
+    variable holding_items = Whole8ArrayArray.new_allocate(&(allocator), MONKEY_COUNT);
+    variable operations = StringArray.new_allocate(&(allocator), MONKEY_COUNT);
+    variable tests = Whole8Array.new_allocate(&(allocator), MONKEY_COUNT);
+    variable if_true = Whole8Array.new_allocate(&(allocator), MONKEY_COUNT);
+    variable if_false = Whole8Array.new_allocate(&(allocator), MONKEY_COUNT);
+    variable inspection_count = Whole8Array.new_allocate(&(allocator), MONKEY_COUNT);
+
+    variable actual_monkey_count = 0;
+
+    variable j = 0;
+    while <(j, StringArray.length(&(lines))) {
+        variable line = StringArray.get(&(lines), j);
+        variable monkey_id_string = String.substring(&(line), 7, 8);
+        variable monkey_id = String.to_whole_8(&(monkey_id_string));
+
+        variable holding_items_individual = Whole8Array.new_allocate(&(allocator), 50);
+
+        variable line = StringArray.get(&(lines), +(j, 1));
+        variable line_index = 18;
+        while <(line_index, String.length(&(line))) {
+
+            variable comma_index = String.get_index(&(line), line_index, ASCII.COMMA);
+            if =(comma_index, 999) {
+                comma_index = String.length(&(line));
+            };
+
+            variable number_string = String.substring(&(line), line_index, comma_index);
+            variable number = String.to_whole_8(&(number_string));
+
+            push_whole_8_array(&(holding_items_individual), number);
+
+            line_index = +(comma_index, 2);
+        };
+
+        Whole8ArrayArray.set(&(holding_items), monkey_id, holding_items_individual);
+
+        variable line = StringArray.get(&(lines), +(j, 2));
+        variable operation = String.substring(&(line), 19, String.length(&(line)));
+
+        variable line = StringArray.get(&(lines), +(j, 3));
+        variable test_string = String.substring(&(line), 21, String.length(&(line)));
+        variable test = String.to_whole_8(&(test_string));
+
+        variable line = StringArray.get(&(lines), +(j, 4));
+        variable true_string = String.substring(&(line), 29, String.length(&(line)));
+        variable true_value = String.to_whole_8(&(true_string));
+
+        variable line = StringArray.get(&(lines), +(j, 5));
+        variable false_string = String.substring(&(line), 30, String.length(&(line)));
+        variable false_value = String.to_whole_8(&(false_string));
+
+        StringArray.set(&(operations), monkey_id, operation);
+        Whole8Array.set(&(tests), monkey_id, test);
+        Whole8Array.set(&(if_true), monkey_id, true_value);
+        Whole8Array.set(&(if_false), monkey_id, false_value);
+
+        actual_monkey_count = +(monkey_id, 1);
+
+        j = +(j, 7);
+    };
+
+    variable total_check = 1;
+    variable i = 0;
+    while <(i, actual_monkey_count) {
+        total_check = *(total_check, Whole8Array.get(&(tests), i));
+        i = +(i, 1);
+    };
+
+    variable i = 0;
+    while <(i, 10000) {
+        variable j = 0;
+        while <(j, actual_monkey_count) {
+            variable items = &(Whole8ArrayArray.get(&(holding_items), j));
+
+            variable operation = StringArray.get(&(operations), j);
+            variable test = Whole8Array.get(&(tests), j);
+
+            variable true_stuff = Whole8Array.get(&(if_true), j);
+            variable false_stuff = Whole8Array.get(&(if_false), j);
+
+            variable inspection_count_local = &(Whole8Array.get(&(inspection_count), j));
+
+            variable k = 0;
+            while !(=(Whole8Array.get(items, k), 0_whole_8)) {
+                variable item = Whole8Array.get(items, k);
+                item = apply_operation(item, &(operation));
+                item = %(item, total_check);
+
+                variable other_monkey = if =(%(item, test), 0) {
+                    true_stuff
+                } else {
+                    false_stuff
+                };
+
+                variable other_items = &(Whole8ArrayArray.get(&(holding_items), other_monkey));
+                push_whole_8_array(other_items, item);
+
+                remove_whole_8_array(items, k);
+
+                whole_8.<(inspection_count_local, +(whole_8.>(inspection_count_local), 1));
+            };
+
+            j = +(j, 1);
+        };
+        i = +(i, 1);
+    };
+
+    variable most = 0;
+    variable second_most = 0;
+
+    variable i = 0;
+    while <(i, actual_monkey_count) {
+        variable inspection_count_local = Whole8Array.get(&(inspection_count), i);
+
+        if >(inspection_count_local, most) {
+            second_most = most;
+            most = inspection_count_local;
+        } else if >(inspection_count_local, second_most) {
+            second_most = inspection_count_local;
+        };
+
+        i = +(i, 1);
+    };
+
+    println_whole_8(*(most, second_most));
+};
+
+define apply_operation = function(value: whole_8, operation: *String.String): whole_8 {
+    variable index = 0;
+    variable next_index = String.get_index(operation, index, ASCII.SPACE);
+    variable first = String.substring(operation, index, next_index);
+    index = +(next_index, 1);
+    next_index = String.get_index(operation, index, ASCII.SPACE);
+    variable second = String.substring(operation, index, next_index);
+    index = +(next_index, 1);
+    variable third = String.substring(operation, index, String.length(operation));
+
+    variable old = String.new("old");
+
+    variable first_operand = if String._=(&(first), &(old)) {
+        value
+    } else {
+        String.to_whole_8(&(first))
+    };
+
+    variable second_operand = if String._=(&(third), &(old)) {
+        value
+    } else {
+        String.to_whole_8(&(third))
+    };
+
+    variable operator = String.get(&(second), 0);
+
+    if =(operator, ASCII.PLUS) {
+        return +(first_operand, second_operand);
+    } else if =(operator, ASCII.MULTIPLY) {
+        return *(first_operand, second_operand);
+    };
+
+    return value;
+};
+
+define pop_whole_8_array = function(any_1_array: *Whole8Array.Array): whole_8 {
+    variable i = 0;
+    while !(=(Whole8Array.get(any_1_array, i), 0_whole_8)) {
+        i = +(i, 1);
+    };
+    i = -(i, 1);
+
+    variable cached = Whole8Array.get(any_1_array, i);
+    Whole8Array.set(any_1_array, i, 0_whole_8);
+
+    return cached;
+};
+
+define remove_whole_8_array = function(any_1_array: *Whole8Array.Array, index: whole_8) {
+    variable i = index;
+    while !(=(Whole8Array.get(any_1_array, i), 0_whole_8)) {
+        i = +(i, 1);
+    };
+    i = -(i, 1);
+
+    variable size = *(-(i, index), 8);
+    copy(&(Whole8Array.get(any_1_array, +(index, 1))), &(Whole8Array.get(any_1_array, index)), size);
+
+    Whole8Array.set(any_1_array, i, 0);
+};
+
+define push_whole_8_array = function(any_1_array: *Whole8Array.Array, character: whole_8) {
+    variable i = 0;
+    while !(=(Whole8Array.get(any_1_array, i), 0_whole_8)) {
+        i = +(i, 1);
+    };
+
+    Whole8Array.set(any_1_array, i, character);
+};
+
+define copy = function(from: *, to: *, size: whole_8) {
+    variable i = 0;
+
+    while <(i, size) {
+        variable done_anything = false;
+
+        if &&(<(+(i, 4096), size), !(done_anything)) {
+            any_4096.<(any_4096.*cast(+(to, i)), any_4096.>(any_4096.*cast(+(from, i))));
+            i = +(i, 4096);
+
+            done_anything = true;
+        };
+
+        if &&(<(+(i, 512), size), !(done_anything)) {
+            any_512.<(any_512.*cast(+(to, i)), any_512.>(any_512.*cast(+(from, i))));
+            i = +(i, 512);
+
+            done_anything = true;
+        };
+
+        if &&(<(+(i, 64), size), !(done_anything)) {
+            any_64.<(any_64.*cast(+(to, i)), any_64.>(any_64.*cast(+(from, i))));
+            i = +(i, 64);
+
+            done_anything = true;
+        };
+
+        if &&(<(+(i, 8), size), !(done_anything)) {
+            any_8.<(any_8.*cast(+(to, i)), any_8.>(any_8.*cast(+(from, i))));
+            i = +(i, 8);
+
+            done_anything = true;
+        };
+
+        if !(done_anything) {
+            any_1.<(any_1.*cast(+(to, i)), any_1.>(any_1.*cast(+(from, i))));
+            i = +(i, 1);
+        };
+    };
+};
